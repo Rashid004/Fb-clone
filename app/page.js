@@ -1,15 +1,16 @@
 /** @format */
 
 import LeftSideNav from "./components/LeftSideNav";
-import Main from "./components/Main";
+import Main from "./components/MainItem";
+import Navigation from "./components/Navigation";
 import RightSidebar from "./components/RightSide";
+import Mainpage from "./main/page";
 
 export default function Home() {
   return (
-    <main className="grid grid-cols-[300px_1fr_300px] min-h-screen max-w-full">
-      <LeftSideNav />
-      <Main />
-      <RightSidebar />
-    </main>
+    <div>
+      <Navigation />
+      <Mainpage />
+    </div>
   );
 }

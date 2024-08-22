@@ -2,7 +2,9 @@
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navigation from "./components/Navigation";
+// import Navigation from "./components/Navigation";
+import { AuthUserProvider } from "@/firebase/authContext";
+import { MessageProvider } from "./components/storeContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,10 +17,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <header>
-          <Navigation />
-        </header>
-        <main>{children}</main>
+        {/* <Navigation /> */}
+        <main>
+          <AuthUserProvider>
+            <MessageProvider>{children}</MessageProvider>
+          </AuthUserProvider>
+        </main>
       </body>
     </html>
   );

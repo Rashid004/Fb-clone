@@ -1,12 +1,26 @@
 /** @format */
-
+"use client";
+import { useAuth } from "@/firebase/authContext";
 import Link from "next/link";
 import { CgBell } from "react-icons/cg";
 import { IoMdLogOut } from "react-icons/io";
 import { MdGroups, MdHomeFilled } from "react-icons/md";
+import Loading from "../Loading";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 function LeftSideNav() {
-  return (
+  const router = useRouter();
+  const { authUser, isLoading, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !authUser) {
+      router.push("/signIn");
+    }
+  }, [authUser, isLoading, router]);
+  return !authUser ? (
+    <Loading />
+  ) : (
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside className="w-64 p-4 flex flex-col space-y-4">
@@ -34,6 +48,7 @@ function LeftSideNav() {
             Notifications
           </Link>
           <Link
+            onClick={signOut}
             href="#"
             className="flex items-center text-gray-900 hover:bg-gray-200 p-2 rounded-md"
           >
@@ -42,12 +57,6 @@ function LeftSideNav() {
           </Link>
         </nav>
       </aside>
-
-      {/* Main Content */}
-      {/* <main className="flex-1 bg-gray-100 p-8">
-        <h1 className="text-2xl font-semibold">Main Content</h1>
-      </main>
-      <aside className="bg-yellow-700">Right</aside> */}
     </div>
   );
 }
