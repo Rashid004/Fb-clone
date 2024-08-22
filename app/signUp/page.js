@@ -46,13 +46,15 @@ export default function SignUp() {
       );
       const user = userCredential.user;
 
-      await updateProfile(user, { displayName: userName });
-
+      await updateProfile(user, {
+        displayName: userName,
+        photoURL: imageUrl,
+      });
       setAuthUser({
         uid: user.uid,
         email: user.email,
         userName: userName,
-        photoUrl: user.photoURL,
+        imageUrl: imageUrl,
       });
 
       console.log("User signed up successfully:", user);

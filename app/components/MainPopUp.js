@@ -41,11 +41,11 @@ function MainPopUp() {
           <div className="flex gap-3 w-full">
             <div>
               <Image
-                src="/profile.png"
+                src={authUser?.imageUrl || "/default-avatar.png"}
                 alt="user"
                 width={45}
                 height={45}
-                className="rounded-full object-cover border border-red-500"
+                className="rounded-full object-cover border"
               />
             </div>
             <div>

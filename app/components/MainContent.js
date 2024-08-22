@@ -9,7 +9,7 @@ import { useMessage } from "./storeContext";
 import { useAuth } from "@/firebase/authContext";
 
 function MainContent() {
-  const { todo, deleteData } = useMessage();
+  const { todo, deleteMessage } = useMessage();
   const { authUser } = useAuth();
 
   const formatDate = (date) => {
@@ -29,7 +29,7 @@ function MainContent() {
 
   if (!authUser) {
     return (
-      <p className="text-center text-2xl font-semibold animate-spin ">
+      <p className="text-center text-2xl font-semibold animate-bounce ">
         Please sign in to view content...
       </p>
     );
@@ -45,7 +45,7 @@ function MainContent() {
           <div id="post-header" className="flex justify-between items-center">
             <div id="left-side" className="flex items-center gap-3">
               <Image
-                src={authUser.imageUrl || "/default-avatar.png"}
+                src={item.userImageUrl || "/profile.png"}
                 alt="user"
                 width={40}
                 height={40}
@@ -53,7 +53,7 @@ function MainContent() {
               />
               <div className="flex flex-col">
                 <h2 className="font-semibold text-sm">
-                  {authUser.userName || "User"}
+                  {item.userName || "User"}
                 </h2>
                 <p className="text-xs text-gray-500">
                   {formatDate(item.createdAt)}
@@ -64,9 +64,13 @@ function MainContent() {
               <button>
                 <BsThreeDots size="1.5em" className="text-gray-600" />
               </button>
-              <button onClick={deleteData}>
-                <RxCross2 size="1.5em" className="text-gray-600" />
-              </button>
+              <div id="right-side" className="flex gap-2 items-center">
+                {authUser && authUser.uid === item.owner && (
+                  <button onClick={() => deleteMessage(item.id)}>
+                    <RxCross2 size="1.5em" className="text-gray-600" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           <div className="pt-3">

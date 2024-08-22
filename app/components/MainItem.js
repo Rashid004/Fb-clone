@@ -9,24 +9,28 @@ import { FaRegSmile } from "react-icons/fa";
 import MainPopUp from "./MainPopUp";
 
 import { useMessage } from "./storeContext";
+import { useAuth } from "@/firebase/authContext";
 
 export default function MainItem() {
   const { isOpen, handleInputClick } = useMessage();
+  const { authUser } = useAuth();
 
   return (
     <main className="flex-1 py-8relative">
       <div className="bg-white flex flex-col gap-4 py-6 sm:py-8 px-4 sm:px-8 lg:px-4  max-w-2xl mx-auto rounded-lg mb-6">
         <div className="flex items-center gap-4  ">
           <Image
-            src="/black-profile.jpeg"
+            src={authUser?.imageUrl || "/default-avatar.png"}
             alt="user"
             width={40}
             height={40}
-            className="rounded-full object-cover border border-red-500"
+            className="rounded-full object-cover border"
           />
           <input
             type="text"
-            placeholder="What's on your mind, Ansari?"
+            placeholder={`What's on your mind, ${
+              authUser?.userName || "User"
+            }?`}
             onClick={handleInputClick}
             className="bg-gray-100 hover:bg-gray-200 pl-4 pr-12 py-3 w-full rounded-full border-none outline-none cursor-pointer"
           />

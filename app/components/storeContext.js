@@ -3,11 +3,19 @@
 "use client";
 
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  getDocs,
+  orderBy,
+  deleteDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/firebase/firebase";
 
-import { doc, getDoc, updateDoc, deleteField } from "firebase/firestore";
 import { useAuth } from "@/firebase/authContext";
 
 const MessageContext = createContext();
@@ -29,6 +37,7 @@ export const MessageProvider = ({ children }) => {
     setFile(e.target.files[0]);
   };
 
+  // Add Data into the firebase store
   const addMessage = async () => {
     if (!authUser) {
       alert("Please sign in to post a message");
@@ -57,26 +66,75 @@ export const MessageProvider = ({ children }) => {
       const docRef = await addDoc(collection(db, "message"), {
         content: message,
         owner: authUser.uid,
+        userName: authUser.userName,
+        userImageUrl: authUser.imageUrl || "/profile.png",
         imageUrl: imageUrl,
         createdAt: new Date(),
       });
 
       console.log("Document written with id", docRef.id);
-      setMessage(""); // Clear message input after adding the message
+      setMessage("");
       setFile(null);
-      handleInputClick(); // Close the popup
-      getDataFire(authUser.uid);
+      handleInputClick();
+      getDataFire();
     } catch (error) {
       console.error("Error message:", error.message);
     } finally {
       setIsLoading(false);
     }
   };
-  const getDataFire = async (uid) => {
-    if (!uid) return;
+  const deleteMessage = async (messageId) => {
+    if (!authUser) {
+      alert("You must be signed in to delete a message");
+      return;
+    }
 
     try {
-      const q = query(collection(db, "message"), where("owner", "==", uid));
+      const messageRef = doc(db, "message", messageId);
+      const messageSnap = await getDoc(messageRef);
+
+      if (!messageSnap.exists()) {
+        alert("Message not found");
+        return;
+      }
+
+      if (messageSnap.data().owner !== authUser.uid) {
+        alert("You can only delete your own messages");
+        return;
+      }
+
+      await deleteDoc(messageRef);
+      console.log("Message deleted successfully");
+      getDataFire(); // Refresh the todo list after deletion
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      alert("Failed to delete message. Please try again.");
+    }
+  };
+  /*
+  // const getDataFire = async (uid) => {
+  //   if (!uid) return;
+
+  //   try {
+  //     const q = query(collection(db, "message"), where("owner", "==", uid));
+
+  //     const querySnapshot = await getDocs(q);
+  //     let data = [];
+  //     querySnapshot.forEach((doc) => {
+  //       data.push({ ...doc.data(), id: doc.id });
+  //     });
+
+  //     setTodo(data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //     setTodo([]);
+  //   }
+  // }; */
+
+  // Fetch data from Firebase
+  const getDataFire = async () => {
+    try {
+      const q = query(collection(db, "message"), orderBy("createdAt", "desc"));
 
       const querySnapshot = await getDocs(q);
       let data = [];
@@ -90,39 +148,14 @@ export const MessageProvider = ({ children }) => {
       setTodo([]);
     }
   };
-
   useEffect(() => {
-    if (authUser) {
-      getDataFire(authUser.uid);
-    }
-  }, [authUser]);
-
-  const deleteData = async (messageId) => {
-    try {
-      const messageRef = doc(db, "message", messageId); // Reference to the specific document
-      const docSnap = await getDoc(messageRef); // Fetch the document
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-
-        // Check if the current user is the owner of the message
-        if (data.owner === authUser.uid) {
-          // Proceed with deleting the 'owner' field or the entire document
-          await updateDoc(messageRef, {
-            owner: deleteField(),
-          });
-
-          console.log("Field deleted successfully.");
-        } else {
-          console.log("You do not have permission to delete this data.");
-        }
-      } else {
-        console.log("No such document exists.");
-      }
-    } catch (err) {
-      console.error("Error deleting document:", err);
-    }
-  };
+    getDataFire();
+  }, []);
+  // useEffect(() => {
+  //   if (authUser) {
+  //     getDataFire(authUser.uid);
+  //   }
+  // }, [authUser]);
 
   return (
     <MessageContext.Provider
@@ -139,7 +172,7 @@ export const MessageProvider = ({ children }) => {
         addMessage,
         todo,
         setTodo,
-        deleteData,
+        deleteMessage,
       }}
     >
       {children}
