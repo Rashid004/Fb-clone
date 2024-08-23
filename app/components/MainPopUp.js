@@ -1,14 +1,12 @@
 /** @format */
-"use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { BiVideoPlus } from "react-icons/bi";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { MdPeopleAlt } from "react-icons/md";
 import { PiImagesSquareBold } from "react-icons/pi";
 import { RxCross2 } from "react-icons/rx";
-import { useMessage } from "./storeContext";
+import { useMessage } from "../../firebase/storeContext";
 import { useAuth } from "@/firebase/authContext";
 
 function MainPopUp() {

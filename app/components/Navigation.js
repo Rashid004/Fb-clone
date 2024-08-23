@@ -14,9 +14,12 @@ import { IoMdLogIn } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 
 import Link from "next/link";
+import { useAuth } from "@/firebase/authContext";
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { signOut } = useAuth();
 
   return (
     <header>
@@ -135,10 +138,11 @@ function Navigation() {
                 <CiShop className="w-7 h-7" />
               </Link>
               <Link
+                onClick={signOut}
                 href="#"
                 className="hover:bg-gray-50 rounded-md block font-semibold p-3"
               >
-                Login
+                Logout
               </Link>
             </div>
             <hr className="bg-gray-300 my-6" />

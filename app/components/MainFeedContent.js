@@ -1,12 +1,9 @@
 /** @format */
 
-"use client";
-
-import Image from "next/image";
-import { BsThreeDots } from "react-icons/bs";
-import { RxCross2 } from "react-icons/rx";
-import { useMessage } from "./storeContext";
 import { useAuth } from "@/firebase/authContext";
+import { useMessage } from "@/firebase/storeContext";
+import Image from "next/image";
+import { RxCross2 } from "react-icons/rx";
 
 function MainContent() {
   const { todo, deleteMessage } = useMessage();
@@ -29,7 +26,7 @@ function MainContent() {
 
   if (!authUser) {
     return (
-      <p className="text-center text-2xl font-semibold animate-bounce ">
+      <p className="text-center text-2xl font-semibold animate-bounce">
         Please sign in to view content...
       </p>
     );
@@ -40,15 +37,15 @@ function MainContent() {
       {todo.map((item, index) => (
         <div
           key={item.id || index}
-          className="flex flex-col bg-white mx-auto rounded-lg px-5 py-4 max-w-2xl  shadow-md mb-4"
+          className="flex flex-col bg-white mx-auto rounded-lg px-4 sm:px-5 py-4 max-w-full sm:max-w-2xl shadow-md mb-4"
         >
           <div id="post-header" className="flex justify-between items-center">
-            <div id="left-side" className="flex items-center gap-3">
+            <div id="left-side" className="flex items-center gap-2 sm:gap-3">
               <Image
                 src={item.userImageUrl || "/profile.png"}
                 alt="user"
-                width={40}
-                height={40}
+                width={36}
+                height={36}
                 className="rounded-full object-cover border border-gray-300"
               />
               <div className="flex flex-col">
@@ -60,17 +57,12 @@ function MainContent() {
                 </p>
               </div>
             </div>
-            <div id="right-side" className="flex gap-6 items-center">
-              {/* <button>
-                <BsThreeDots size="1.5em" className="text-gray-600" />
-              </button> */}
-              <div id="right-side" className="flex gap-2 items-center">
-                {authUser && authUser.uid === item.owner && (
-                  <button onClick={() => deleteMessage(item.id)}>
-                    <RxCross2 size="1.5em" className="text-gray-600" />
-                  </button>
-                )}
-              </div>
+            <div id="right-side" className="flex gap-2 items-center">
+              {authUser && authUser.uid === item.owner && (
+                <button onClick={() => deleteMessage(item.id)}>
+                  <RxCross2 size="1.5em" className="text-gray-600" />
+                </button>
+              )}
             </div>
           </div>
           <div className="pt-3">
@@ -79,9 +71,9 @@ function MainContent() {
             </p>
           </div>
           {item.imageUrl && (
-            <div className="pt-4 ">
+            <div className="pt-4">
               <img
-                className="w-full rounded-lg object-cover object-center h-[500px]"
+                className="w-full rounded-lg object-cover object-center max-h-96 sm:h-[500px]"
                 src={item.imageUrl}
                 alt="Post image"
               />

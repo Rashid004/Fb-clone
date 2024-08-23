@@ -1,6 +1,6 @@
 /** @format */
 "use client";
-import MainContent from "./MainContent";
+import MainContent from "./MainFeedContent";
 import Image from "next/image";
 import { FaVideo } from "react-icons/fa6";
 import { IoMdPhotos } from "react-icons/io";
@@ -8,7 +8,7 @@ import { FaRegSmile } from "react-icons/fa";
 
 import MainPopUp from "./MainPopUp";
 
-import { useMessage } from "./storeContext";
+import { useMessage } from "../../firebase/storeContext";
 import { useAuth } from "@/firebase/authContext";
 
 export default function MainItem() {
