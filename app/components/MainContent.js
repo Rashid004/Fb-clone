@@ -40,7 +40,7 @@ function MainContent() {
       {todo.map((item, index) => (
         <div
           key={item.id || index}
-          className="flex flex-col bg-white mx-auto rounded-lg px-5 py-4 max-w-2xl h-fit shadow-md mb-4"
+          className="flex flex-col bg-white mx-auto rounded-lg px-5 py-4 max-w-2xl  shadow-md mb-4"
         >
           <div id="post-header" className="flex justify-between items-center">
             <div id="left-side" className="flex items-center gap-3">
@@ -61,9 +61,9 @@ function MainContent() {
               </div>
             </div>
             <div id="right-side" className="flex gap-6 items-center">
-              <button>
+              {/* <button>
                 <BsThreeDots size="1.5em" className="text-gray-600" />
-              </button>
+              </button> */}
               <div id="right-side" className="flex gap-2 items-center">
                 {authUser && authUser.uid === item.owner && (
                   <button onClick={() => deleteMessage(item.id)}>
@@ -79,9 +79,9 @@ function MainContent() {
             </p>
           </div>
           {item.imageUrl && (
-            <div className="pt-4">
+            <div className="pt-4 ">
               <img
-                className="w-full rounded-lg object-cover"
+                className="w-full rounded-lg object-cover object-center h-[500px]"
                 src={item.imageUrl}
                 alt="Post image"
               />
