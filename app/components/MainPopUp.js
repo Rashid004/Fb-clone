@@ -13,10 +13,11 @@ function MainPopUp() {
   const {
     handleInputClick,
     handleImageUpload,
-    addMessage,
-    message,
+    handleVideoUpload,
+    addPost,
+    post,
     file,
-    setMessage,
+    setPost,
     isLoading,
   } = useMessage();
 
@@ -39,7 +40,7 @@ function MainPopUp() {
           <div className="flex gap-3 w-full">
             <div>
               <Image
-                src={authUser?.imageUrl || "/default-avatar.png"}
+                src={authUser?.imageUrl || "/profile.png"}
                 alt="user"
                 width={45}
                 height={45}
@@ -48,7 +49,7 @@ function MainPopUp() {
             </div>
             <div>
               <h2 className="font-semibold text-lg">
-                {authUser?.userName || "User"}
+                {authUser.userName || "User"}
               </h2>
               <p className="flex items-center gap-1 bg-gray-300 text-black text-sm font-semibold rounded-md px-2 py-1">
                 <MdPeopleAlt />
@@ -63,8 +64,8 @@ function MainPopUp() {
               placeholder={`What's on your mind, ${
                 authUser?.userName || "User"
               }?`}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              value={post}
+              onChange={(e) => setPost(e.target.value)}
               className="outline-none border-none w-full text-xl py-5 px-1 pr-8"
             />
           </div>
@@ -99,7 +100,7 @@ function MainPopUp() {
                     id="video-upload"
                     accept="video/*"
                     className="hidden"
-                    // onChange={handleVideoUpload} // You may want to implement this function if needed
+                    onChange={handleVideoUpload} // You may want to implement this function if needed
                   />
                 </button>
               </div>
@@ -110,7 +111,7 @@ function MainPopUp() {
               </p>
             )}
             <button
-              onClick={addMessage}
+              onClick={addPost}
               disabled={isLoading}
               className={`bg-primary-0 hover:bg-opacity-75 text-white px-4 py-2 w-full rounded-md ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""

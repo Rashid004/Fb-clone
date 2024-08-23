@@ -13,7 +13,13 @@ import {
   doc,
   getDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { db, storage } from "@/firebase/firebase";
 
 import { useAuth } from "@/firebase/authContext";
@@ -23,8 +29,8 @@ const MessageContext = createContext();
 export const MessageProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
-  const [message, setMessage] = useState();
-  const [todo, setTodo] = useState([]); // Initialize as an empty array
+  const [post, setPost] = useState("");
+  const [todo, setTodo] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { authUser } = useAuth();
@@ -36,15 +42,17 @@ export const MessageProvider = ({ children }) => {
   const handleImageUpload = (e) => {
     setFile(e.target.files[0]);
   };
+  const handleVideoUpload = (e) => {
+    setFile(e.target.files[0]);
+  };
 
-  // Add Data into the firebase store
-  const addMessage = async () => {
+  const addPost = async () => {
     if (!authUser) {
       alert("Please sign in to post a message");
       return;
     }
 
-    if (!message && !file) {
+    if (!post && !file) {
       alert("Please enter a message or select an image");
       return;
     }
@@ -55,25 +63,23 @@ export const MessageProvider = ({ children }) => {
       let imageUrl = null;
 
       if (file) {
-        const storageRef = ref(
-          storage,
-          `posts/${authUser.uid}/${Date.now()}_${file.name}`
-        );
+        const fileName = `${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, `posts/${authUser.uid}/${fileName}`);
         await uploadBytes(storageRef, file);
         imageUrl = await getDownloadURL(storageRef);
       }
 
-      const docRef = await addDoc(collection(db, "message"), {
-        content: message,
-        owner: authUser.uid,
-        userName: authUser.userName,
-        userImageUrl: authUser.imageUrl || "/profile.png",
+      const docRef = await addDoc(collection(db, "post"), {
+        content: post,
+        userId: authUser.uid,
         imageUrl: imageUrl,
         createdAt: new Date(),
+        userName: authUser.userName,
+        userImageUrl: authUser.imageUrl,
       });
 
       console.log("Document written with id", docRef.id);
-      setMessage("");
+      setPost("");
       setFile(null);
       handleInputClick();
       getDataFire();
@@ -83,58 +89,45 @@ export const MessageProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
-  const deleteMessage = async (messageId) => {
+
+  const deletePost = async (postId) => {
     if (!authUser) {
-      alert("You must be signed in to delete a message");
+      alert("You must be signed in to delete a post");
       return;
     }
 
     try {
-      const messageRef = doc(db, "message", messageId);
-      const messageSnap = await getDoc(messageRef);
+      const postRef = doc(db, "post", postId);
+      const postSnap = await getDoc(postRef);
 
-      if (!messageSnap.exists()) {
-        alert("Message not found");
+      if (!postSnap.exists()) {
+        alert("Post not found");
         return;
       }
 
-      if (messageSnap.data().owner !== authUser.uid) {
-        alert("You can only delete your own messages");
+      if (postSnap.data().userId !== authUser.uid) {
+        alert("You can only delete your own post");
         return;
       }
 
-      await deleteDoc(messageRef);
-      console.log("Message deleted successfully");
+      // Delete the image from storage if it exists
+      if (postSnap.data().imageUrl) {
+        const imageRef = ref(storage, postSnap.data().imageUrl);
+        await deleteObject(imageRef);
+      }
+
+      await deleteDoc(postRef);
+      console.log("Post deleted successfully");
       getDataFire(); // Refresh the todo list after deletion
     } catch (error) {
-      console.error("Error deleting message:", error);
-      alert("Failed to delete message. Please try again.");
+      console.error("Error deleting post:", error);
+      alert("Failed to delete post. Please try again.");
     }
   };
-  /*
-  // const getDataFire = async (uid) => {
-  //   if (!uid) return;
 
-  //   try {
-  //     const q = query(collection(db, "message"), where("owner", "==", uid));
-
-  //     const querySnapshot = await getDocs(q);
-  //     let data = [];
-  //     querySnapshot.forEach((doc) => {
-  //       data.push({ ...doc.data(), id: doc.id });
-  //     });
-
-  //     setTodo(data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     setTodo([]);
-  //   }
-  // }; */
-
-  // Fetch data from Firebase
   const getDataFire = async () => {
     try {
-      const q = query(collection(db, "message"), orderBy("createdAt", "desc"));
+      const q = query(collection(db, "post"), orderBy("createdAt", "desc"));
 
       const querySnapshot = await getDocs(q);
       let data = [];
@@ -148,14 +141,10 @@ export const MessageProvider = ({ children }) => {
       setTodo([]);
     }
   };
+
   useEffect(() => {
     getDataFire();
   }, []);
-  // useEffect(() => {
-  //   if (authUser) {
-  //     getDataFire(authUser.uid);
-  //   }
-  // }, [authUser]);
 
   return (
     <MessageContext.Provider
@@ -164,15 +153,16 @@ export const MessageProvider = ({ children }) => {
         handleInputClick,
         file,
         setFile,
-        message,
-        setMessage,
+        post,
+        setPost,
         isLoading,
         setIsLoading,
         handleImageUpload,
-        addMessage,
+        handleVideoUpload,
+        addPost,
         todo,
         setTodo,
-        deleteMessage,
+        deletePost,
       }}
     >
       {children}

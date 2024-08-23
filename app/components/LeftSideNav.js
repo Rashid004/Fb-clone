@@ -21,9 +21,9 @@ function LeftSideNav() {
   return !authUser ? (
     <Loading />
   ) : (
-    <div className="lg:flex min-h-screen hidden">
+    <div className="flex lg:min-h-screen mt-6">
       {/* Sidebar */}
-      <aside className="w-64 p-4 flex flex-col space-y-4">
+      <aside className="w-64 p-4 md:flex flex-col space-y-4 hidden">
         <div className="text-gray-900 text-xl font-semibold mb-6">Logo</div>
         <nav className="flex flex-col space-y-4">
           <Link

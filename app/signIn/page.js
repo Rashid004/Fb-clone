@@ -13,6 +13,7 @@ import { auth } from "@/firebase/firebase";
 import { useAuth } from "@/firebase/authContext";
 import { useRouter } from "next/navigation";
 import Loading from "../Loading";
+import { toast } from "react-toastify";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -25,6 +26,7 @@ export default function SignIn() {
   // Navigate to main page
   useEffect(() => {
     if (!isLoading && authUser) {
+      toast.success("Successfully login");
       router.push("/");
     }
   }, [authUser, isLoading, router]);
@@ -39,9 +41,9 @@ export default function SignIn() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // The authUser state should be updated by the AuthContext
+      toast.success("Successfully login");
     } catch (err) {
-      console.error("An error occurred", err);
+      toast.error("An error occurred", err);
       setError(err.message);
     }
   };
