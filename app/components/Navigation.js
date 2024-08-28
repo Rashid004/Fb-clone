@@ -9,17 +9,17 @@ import { FaFacebook } from "react-icons/fa";
 
 import { CgMenuGridO } from "react-icons/cg";
 import { FaFacebookMessenger } from "react-icons/fa";
-import { FaBell } from "react-icons/fa";
-import { IoMdLogIn } from "react-icons/io";
+import { IoMdLogOut } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 
 import Link from "next/link";
 import { useAuth } from "@/firebase/authContext";
+import Image from "next/image";
 
 function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { signOut } = useAuth();
+  const { signOut, authUser } = useAuth();
 
   return (
     <header>
@@ -53,34 +53,50 @@ function Navigation() {
             href="#"
             className="hover:bg-indigo-500 rounded-md block font-semibold m-3 p-3 text-lg"
           >
-            <CiShop className="w-7 h-7" />
+            <div>
+              <CiShop className="w-7 h-7" />
+            </div>
           </Link>
         </div>
 
-        <div className="hidden lg:flex flex-1 justify-end gap-2">
+        <div className="hidden lg:flex flex-1 items-center justify-end gap-4">
           <Link
             href="#"
-            className=" flex items-center gap-1 text-lg px-2 py-2 rounded-full font-medium border border-gray-400 hover:border-gray-600"
+            className=" flex items-cente justify-center gap-1 text-lg px-2 py-2 rounded-full font-medium border border-gray-400 hover:border-gray-600"
           >
-            <CgMenuGridO className="w-7 h-7" />
+            <div>
+              <CgMenuGridO className="w-7 h-7" />
+            </div>
           </Link>
           <Link
             href="#"
             className=" flex items-center gap-1 text-lg px-2 py-2 rounded-full font-medium border border-gray-400 hover:border-gray-600"
           >
-            <FaFacebookMessenger className="w-7 h-7" />
+            <div>
+              <FaFacebookMessenger className="w-7 h-7" />
+            </div>
+          </Link>
+          <Link
+            onClick={signOut}
+            href="#"
+            className="flex items-center  hover:bg-indigo-600 p-2  cursor-pointer bg-indigo-500 text-white rounded-md px-4 py-1"
+          >
+            <IoMdLogOut className="h-6 w-6 mr-3" />
+            Logout
           </Link>
           <Link
             href="#"
             className=" flex items-center gap-1 text-lg px-2 py-2  font-medium border rounded-full border-gray-400 hover:border-gray-600"
           >
-            <FaBell className="w-7 h-7" />
-          </Link>
-          <Link
-            href="#"
-            className=" flex items-center gap-1 text-lg px-2 py-2  font-medium border rounded-full border-gray-400 hover:border-gray-600"
-          >
-            {/* <IoMdLogIn className="w-7 h-7" /> */}
+            <div>
+              <Image
+                src={authUser?.imageUrl || "/profile.png"}
+                alt="user"
+                width={40}
+                height={40}
+                className="rounded-full object-cover border"
+              />
+            </div>
           </Link>
         </div>
 
@@ -95,7 +111,7 @@ function Navigation() {
           )}
         </button>
 
-        {isOpen && (
+        {/* {isOpen && (
           <div
             id="nav-dialog"
             className="fixed inset-0 bg-white lg:hidden z-10 h-screen px-5 py-1 overflow-y-auto"
@@ -147,13 +163,12 @@ function Navigation() {
             </div>
             <hr className="bg-gray-300 my-6" />
             <button className="w-full flex items-center gap-1 text-lg px-2 py-1 rounded-lg hover:bg-gray-50">
-              {/* <img src="public/assets/electron.svg" alt="Electron" /> */}
               <span className="text-base font-semibold">
                 Electron Developer
               </span>
             </button>
           </div>
-        )}
+        )} */}
       </nav>
     </header>
   );

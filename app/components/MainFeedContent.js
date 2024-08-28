@@ -1,16 +1,22 @@
 /** @format */
 
-// "use client";
+"use client";
 
 import Image from "next/image";
 import { BsThreeDots } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { useMessage } from "../../firebase/storeContext";
 import { useAuth } from "@/firebase/authContext";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "@/firebase/firebase";
+import { useEffect, useState } from "react";
+import Loading from "../Loading";
+import { useRouter } from "next/navigation";
 
 function MainContent() {
-  const { todo, deletePost } = useMessage();
+  const { deletePost } = useMessage();
   const { authUser } = useAuth();
+  const [todo, setTodo] = useState([]);
 
   const formatDate = (date) => {
     if (!(date instanceof Date)) {
@@ -27,20 +33,49 @@ function MainContent() {
     return date.toLocaleDateString("en-US", options);
   };
 
-  if (!authUser) {
-    return (
-      <p className="text-center text-2xl font-semibold animate-bounce ">
-        Please sign in to view content...
-      </p>
-    );
-  }
+  // Fetch Data from Firebase
+  const getDataFire = () => {
+    try {
+      const q = query(collection(db, "post"), orderBy("createdAt", "desc"));
 
-  return (
+      const unsubscribe = onSnapshot(
+        q,
+        (querySnapshot) => {
+          let data = [];
+          querySnapshot.forEach((doc) => {
+            data.push({ ...doc.data(), id: doc.id });
+          });
+
+          setTodo(data);
+        },
+        (error) => {
+          console.error("Error fetching data:", error);
+          setTodo([]);
+        }
+      );
+
+      return unsubscribe;
+    } catch (error) {
+      console.error("Error setting up listener:", error);
+      return () => {};
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = getDataFire();
+    return () => unsubscribe();
+  }, []);
+
+  return !authUser ? (
+    <p className="text-center text-2xl font-semibold animate-bounce ">
+      Please sign in to view content...
+    </p>
+  ) : (
     <>
       {todo.map((item, index) => (
         <div
           key={item.id || index}
-          className="flex flex-col bg-white mx-auto rounded-lg px-5 py-4 max-w-full md:max-w-2xl  shadow-md mb-4"
+          className="flex flex-col bg-white mx-auto rounded-lg px-5 py-4 max-w-full lg:max-w-2xl  shadow-md mb-4"
         >
           <div
             id="post-header"
@@ -50,6 +85,7 @@ function MainContent() {
               <Image
                 src={item.userImageUrl || "/profile.png"}
                 alt="user"
+                quality={90}
                 width={40}
                 height={40}
                 className="rounded-full object-cover border border-gray-300"
@@ -64,9 +100,9 @@ function MainContent() {
               </div>
             </div>
             <div id="right-side" className="flex gap-6 items-center">
-              {/* <button>
+              <button>
                 <BsThreeDots size="1.5em" className="text-gray-600" />
-              </button> */}
+              </button>
               <div id="right-side" className="flex gap-2 items-center">
                 {authUser && authUser.uid === item.userId && (
                   <button onClick={() => deletePost(item.id)}>

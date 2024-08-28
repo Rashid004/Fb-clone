@@ -2,17 +2,8 @@
 
 "use client";
 
-import React, { createContext, useState, useContext, useEffect } from "react";
-import {
-  collection,
-  addDoc,
-  query,
-  getDocs,
-  orderBy,
-  deleteDoc,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import React, { createContext, useState, useContext } from "react";
+import { collection, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
 
 import {
   ref,
@@ -30,7 +21,6 @@ export const MessageProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [post, setPost] = useState("");
-  const [todo, setTodo] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { authUser } = useAuth();
@@ -46,6 +36,7 @@ export const MessageProvider = ({ children }) => {
     setFile(e.target.files[0]);
   };
 
+  // Store data in firebase store & storage
   const addPost = async () => {
     if (!authUser) {
       alert("Please sign in to post a message");
@@ -82,14 +73,13 @@ export const MessageProvider = ({ children }) => {
       setPost("");
       setFile(null);
       handleInputClick();
-      getDataFire();
     } catch (error) {
       console.error("Error message:", error.message);
     } finally {
       setIsLoading(false);
     }
   };
-
+  // Delete Data from firebase store and storage
   const deletePost = async (postId) => {
     if (!authUser) {
       alert("You must be signed in to delete a post");
@@ -118,33 +108,12 @@ export const MessageProvider = ({ children }) => {
 
       await deleteDoc(postRef);
       console.log("Post deleted successfully");
-      getDataFire(); // Refresh the todo list after deletion
+      // getDataFire(); // Refresh the todo list after deletion
     } catch (error) {
       console.error("Error deleting post:", error);
       alert("Failed to delete post. Please try again.");
     }
   };
-
-  const getDataFire = async () => {
-    try {
-      const q = query(collection(db, "post"), orderBy("createdAt", "desc"));
-
-      const querySnapshot = await getDocs(q);
-      let data = [];
-      querySnapshot.forEach((doc) => {
-        data.push({ ...doc.data(), id: doc.id });
-      });
-
-      setTodo(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setTodo([]);
-    }
-  };
-
-  useEffect(() => {
-    getDataFire();
-  }, []);
 
   return (
     <MessageContext.Provider
@@ -160,8 +129,7 @@ export const MessageProvider = ({ children }) => {
         handleImageUpload,
         handleVideoUpload,
         addPost,
-        todo,
-        setTodo,
+
         deletePost,
       }}
     >

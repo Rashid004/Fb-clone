@@ -15,6 +15,7 @@ import { FaGoogle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/firebase/authContext";
 import Loading from "../Loading";
+import Image from "next/image";
 
 export default function SignUp() {
   const [userName, setUserName] = useState("");
@@ -87,10 +88,12 @@ export default function SignUp() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-white">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
+        <Image
           alt="Your Company"
           src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg"
           className="mx-auto h-16 w-auto"
+          width={100}
+          height={60}
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign up for an account

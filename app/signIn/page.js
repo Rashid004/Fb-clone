@@ -9,11 +9,13 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+
 import { auth } from "@/firebase/firebase";
 import { useAuth } from "@/firebase/authContext";
 import { useRouter } from "next/navigation";
 import Loading from "../Loading";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -26,8 +28,8 @@ export default function SignIn() {
   // Navigate to main page
   useEffect(() => {
     if (!isLoading && authUser) {
-      toast.success("Successfully login");
       router.push("/");
+      toast.success("Successfully login");
     }
   }, [authUser, isLoading, router]);
 
@@ -53,7 +55,6 @@ export default function SignIn() {
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, provider);
-      // The authUser state should be updated by the AuthContext
     } catch (err) {
       console.error("An error occurred", err);
       setError(err.message);
@@ -72,10 +73,12 @@ export default function SignIn() {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-white">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
+        <Image
           alt="Your Company"
           src="https://static.xx.fbcdn.net/rsrc.php/y1/r/4lCu2zih0ca.svg"
           className="mx-auto h-16 w-auto"
+          width={100}
+          height={60}
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to your account

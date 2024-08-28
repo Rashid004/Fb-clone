@@ -2,7 +2,6 @@
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-// import Navigation from "./components/Navigation";
 import { AuthUserProvider } from "@/firebase/authContext";
 import { MessageProvider } from "../firebase/storeContext";
 
@@ -17,7 +16,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* <Navigation /> */}
         <main>
           <AuthUserProvider>
             <MessageProvider>{children}</MessageProvider>

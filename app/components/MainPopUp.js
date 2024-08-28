@@ -40,7 +40,7 @@ function MainPopUp() {
           <div className="flex gap-3 w-full">
             <div>
               <Image
-                src={authUser?.imageUrl || "/profile.png"}
+                src={authUser?.imageUrl || ""}
                 alt="user"
                 width={45}
                 height={45}
